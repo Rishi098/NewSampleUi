@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/activity_catagory.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/activity_home.xml" value="0.18385416666666668" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/activity_main.xml" value="0.1859375" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/activity_whats_dp.xml" value="0.18385416666666668" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/app_bar_catagory.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/content_catagory.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/fragment_cleaner.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/fragment_gallery.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/fragment_home.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/fragment_slideshow.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/public_post_list.xml" value="0.2" />
+        <entry key="..\:/AndroidProjects/WhatsDp/app/src/main/res/layout/whatsdp.xml" value="0.18385416666666668" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
