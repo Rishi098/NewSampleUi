@@ -20,9 +20,9 @@ import androidx.core.content.FileProvider
 import com.github.ybq.android.spinkit.SpinKitView
 import com.github.ybq.android.spinkit.style.CubeGrid
 import com.google.android.material.snackbar.Snackbar
-import com.itamazons.innstatracker.BuildConfig
-import com.itamazons.innstatracker.R
-import com.itamazons.innstatracker.SharePreferene.SharePref
+import com.itamazons.whatsdp.BuildConfig
+import com.itamazons.whatsdp.R
+import com.itamazons.whatsdp.SharePreferene.SharePref
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -39,7 +39,6 @@ class MyApplication : Application() {
         super.onCreate()
         instance = this
         SharePref.instance?.InitizeSharePref(this)
-        setDefaultSharePref()
     }
 
 
