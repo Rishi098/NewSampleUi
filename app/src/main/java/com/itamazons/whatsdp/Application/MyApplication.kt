@@ -1,4 +1,4 @@
-package com.itamazons.innstatracker.Application
+package com.itamazons.whatsdp.Application
 
 import android.app.Activity
 import android.app.Application
