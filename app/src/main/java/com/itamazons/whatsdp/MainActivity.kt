@@ -1,4 +1,4 @@
-package com.itamazons.mychart
+package com.itamazons.whatsdp
 
 import android.os.Bundle
 import android.view.*
@@ -9,201 +9,240 @@ import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener
 import lecho.lib.hellocharts.model.*
 import lecho.lib.hellocharts.util.ChartUtils
 import lecho.lib.hellocharts.view.LineChartView
-
+import android.util.Log
+import com.itamazons.whatsdp.utils.ErrorHandler
+import com.itamazons.whatsdp.utils.AppConstants
 
 class MainActivity : AppCompatActivity() {
+    
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().add(R.id.container, PlaceholderFragment()).commit()
+        try {
+            if (savedInstanceState == null) {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.container, PlaceholderFragment())
+                    .commit()
+            }
+        } catch (e: Exception) {
+            ErrorHandler.handleError(this, TAG, "Error initializing fragment", e)
         }
     }
 
-
     class PlaceholderFragment : Fragment() {
-        var chart: LineChartView? = null
-        var data: LineChartData? = null
-        var numberOfLines = 1
-        val maxNumberOfLines = 4
-        val numberOfPoints = 6
-        var axis_Y_List: MutableList<AxisValue>? = null
-        var axis_X_List: MutableList<AxisValue>? = null
-        var randomNumbersTab = Array(maxNumberOfLines) { FloatArray(numberOfPoints) }
-        var hasAxes = true
-        var hasAxesNames = true
-        var hasLines = true
-        var hasPoints = true
-        var shape = ValueShape.CIRCLE
-        var isFilled = false
-        var hasLabels = false
-        var xinputlist: ArrayList<Float>? = null
-        var yinputList: ArrayList<Float>? = null
-        var isCubic = true
-        var hasLabelForSelected = false
-        var pointsHaveDifferentColor = false
-        var hasGradientToTransparent = false
-        var spinnervalue :String=""
-        var volume:String=""
+        
+        companion object {
+            private const val TAG = "PlaceholderFragment"
+        }
+        
+        private var chart: LineChartView? = null
+        private var data: LineChartData? = null
+        private var numberOfLines = 1
+        private var axis_Y_List: MutableList<AxisValue>? = null
+        private var axis_X_List: MutableList<AxisValue>? = null
+        private var randomNumbersTab = Array(AppConstants.Chart.MAX_NUMBER_OF_LINES) { FloatArray(AppConstants.Chart.NUMBER_OF_POINTS) }
+        private var hasAxes = true
+        private var hasAxesNames = true
+        private var hasLines = true
+        private var hasPoints = true
+        private var shape = ValueShape.CIRCLE
+        private var isFilled = false
+        private var hasLabels = false
+        private var xinputlist: ArrayList<Float>? = null
+        private var yinputList: ArrayList<Float>? = null
+        private var isCubic = true
+        private var hasLabelForSelected = false
+        private var pointsHaveDifferentColor = false
+        private var hasGradientToTransparent = false
+        private var spinnervalue: String = ""
+        private var volume: String = ""
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-            setHasOptionsMenu(true)
-            val rootView: View = inflater.inflate(R.layout.fragment_line_chart, container, false)
-            axis_Y_List = ArrayList()
-            axis_Y_List!!.add(AxisValue(1.75f).setLabel("1.75"))
-            axis_Y_List!!.add(AxisValue(1.77f).setLabel("1.77"))
-            axis_Y_List!!.add(AxisValue(1.79f).setLabel("1.79"))
-            axis_Y_List!!.add(AxisValue(1.81f).setLabel("1.81"))
-            axis_Y_List!!.add(AxisValue(1.83f).setLabel("1.83"))
-            axis_Y_List!!.add(AxisValue(1.85f).setLabel("1.85"))
-            axis_Y_List!!.add(AxisValue(1.87f).setLabel("1.87"))
-            axis_Y_List!!.add(AxisValue(1.91f).setLabel("1.91"))
-            axis_Y_List!!.add(AxisValue(1.93f).setLabel("1.93"))
-
-
-            axis_X_List = ArrayList()
-            axis_X_List!!.add(AxisValue(6f).setLabel("6"))
-            axis_X_List!!.add(AxisValue(7f).setLabel("7"))
-            axis_X_List!!.add(AxisValue(8f).setLabel("8"))
-            axis_X_List!!.add(AxisValue(9f).setLabel("9"))
-            axis_X_List!!.add(AxisValue(10f).setLabel("10"))
-            axis_X_List!!.add(AxisValue(11f).setLabel("11"))
-            axis_X_List!!.add(AxisValue(12f).setLabel("12"))
-            axis_X_List!!.add(AxisValue(13f).setLabel("13"))
-            axis_X_List!!.add(AxisValue(14f).setLabel("14"))
-            axis_X_List!!.add(AxisValue(15f).setLabel("15"))
-            axis_X_List!!.add(AxisValue(16f).setLabel("16"))
-
-            chart = rootView.findViewById(R.id.chart)
-            chart!!.onValueTouchListener = ValueTouchListener()
-            xinputlist = ArrayList()
-            yinputList = ArrayList()
-            xinputlist!!.add(7f)
-            xinputlist!!.add(9f)
-            xinputlist!!.add(10f)
-            xinputlist!!.add(11f)
-            xinputlist!!.add(13f)
-            xinputlist!!.add(15f)
-
-
-            yinputList!!.add(1.77f)
-            yinputList!!.add(1.85f)
-            yinputList!!.add(1.87f)
-            yinputList!!.add(1.865f)
-            yinputList!!.add(1.8265f)
-            yinputList!!.add(1.77f)
-
-
-            // Generate some random values.
-            //generateValues()
-            generateData()
-
-            // Disable viewport recalculations, see toggleCubic() method for more info.
-            chart!!.isViewportCalculationEnabled = true
-            resetViewport()
-            return rootView
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            return try {
+                setHasOptionsMenu(true)
+                val rootView: View = inflater.inflate(R.layout.fragment_line_chart, container, false)
+                initializeChartData()
+                initializeChart(rootView)
+                rootView
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error creating view", e)
+                null
+            }
         }
 
-        // MENU
+        private fun initializeChartData() {
+            try {
+                // Initialize Y-axis data
+                axis_Y_List = mutableListOf(
+                    AxisValue(1.75f).setLabel("1.75"),
+                    AxisValue(1.77f).setLabel("1.77"),
+                    AxisValue(1.79f).setLabel("1.79"),
+                    AxisValue(1.81f).setLabel("1.81"),
+                    AxisValue(1.83f).setLabel("1.83"),
+                    AxisValue(1.85f).setLabel("1.85"),
+                    AxisValue(1.87f).setLabel("1.87"),
+                    AxisValue(1.91f).setLabel("1.91"),
+                    AxisValue(1.93f).setLabel("1.93")
+                )
 
+                // Initialize X-axis data
+                axis_X_List = mutableListOf(
+                    AxisValue(6f).setLabel("6"),
+                    AxisValue(7f).setLabel("7"),
+                    AxisValue(8f).setLabel("8"),
+                    AxisValue(9f).setLabel("9"),
+                    AxisValue(10f).setLabel("10"),
+                    AxisValue(11f).setLabel("11"),
+                    AxisValue(12f).setLabel("12"),
+                    AxisValue(13f).setLabel("13"),
+                    AxisValue(14f).setLabel("14"),
+                    AxisValue(15f).setLabel("15"),
+                    AxisValue(16f).setLabel("16")
+                )
 
-//        private fun generateValues() {
-//            for (i in 0 until maxNumberOfLines) {
-//                for (j in 0 until numberOfPoints) {
-//                    randomNumbersTab[i][j] = Math.random().toFloat() * 6
-//                }
-//            }
-//            System.out.println("RandomList" + randomNumbersTab)
-//        }
+                // Initialize input data
+                xinputlist = arrayListOf(7f, 9f, 10f, 11f, 13f, 15f)
+                yinputList = arrayListOf(1.77f, 1.85f, 1.87f, 1.865f, 1.8265f, 1.77f)
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error initializing chart data", e)
+            }
+        }
 
+        private fun initializeChart(rootView: View) {
+            try {
+                chart = rootView.findViewById(R.id.chart)
+                chart?.onValueTouchListener = ValueTouchListener()
+                
+                generateData()
+                chart?.isViewportCalculationEnabled = true
+                resetViewport()
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error initializing chart", e)
+            }
+        }
 
         private fun resetViewport() {
-            val v = Viewport(chart!!.maximumViewport)
-            v.bottom = 1.75f
-            v.top = 1.9f
-            v.left = 6f
-            v.right = 17f
-            chart!!.maximumViewport = v
-            chart!!.currentViewport = v
+            try {
+                val v = Viewport(chart?.maximumViewport ?: Viewport())
+                v.bottom = AppConstants.Chart.DEFAULT_VIEWPORT_BOTTOM
+                v.top = AppConstants.Chart.DEFAULT_VIEWPORT_TOP
+                v.left = AppConstants.Chart.DEFAULT_VIEWPORT_LEFT
+                v.right = AppConstants.Chart.DEFAULT_VIEWPORT_RIGHT
+                chart?.maximumViewport = v
+                chart?.currentViewport = v
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error resetting viewport", e)
+            }
         }
 
         private fun generateData() {
-            val lines: MutableList<Line> = ArrayList<Line>()
-            val values: MutableList<PointValue> = ArrayList()
-            for (i in 0 until numberOfPoints) {
-                values.add(PointValue(xinputlist!!.get(i), yinputList!!.get(i)))
-                val line = Line(values)
-                line.setColor(R.color.black)
-                line.setShape(shape)
-                line.setCubic(isCubic)
-                line.setFilled(isFilled)
-                line.setStrokeWidth(2)
-                line.pointRadius = 3
-                line.setHasLabels(hasLabels)
-                line.setHasLabelsOnlyForSelected(hasLabelForSelected)
-                line.setHasLines(hasLines)
-                line.setHasPoints(hasPoints)
-//                line.setHasGradientToTransparent(hasGradientToTransparent)
-                if (pointsHaveDifferentColor) {
-                    line.setPointColor(ChartUtils.COLORS[(1) % ChartUtils.COLORS.size])
+            try {
+                val lines: MutableList<Line> = mutableListOf()
+                val values: MutableList<PointValue> = mutableListOf()
+                
+                for (i in 0 until AppConstants.Chart.NUMBER_OF_POINTS) {
+                    val xValue = xinputlist?.getOrNull(i) ?: 0f
+                    val yValue = yinputList?.getOrNull(i) ?: 0f
+                    values.add(PointValue(xValue, yValue))
                 }
+                
+                val line = Line(values).apply {
+                    color = R.color.black
+                    shape = this@PlaceholderFragment.shape
+                    isCubic = this@PlaceholderFragment.isCubic
+                    isFilled = this@PlaceholderFragment.isFilled
+                    strokeWidth = AppConstants.Chart.DEFAULT_STROKE_WIDTH
+                    pointRadius = AppConstants.Chart.DEFAULT_POINT_RADIUS
+                    hasLabels = this@PlaceholderFragment.hasLabels
+                    hasLabelsOnlyForSelected = this@PlaceholderFragment.hasLabelForSelected
+                    hasLines = this@PlaceholderFragment.hasLines
+                    hasPoints = this@PlaceholderFragment.hasPoints
+                    
+                    if (pointsHaveDifferentColor) {
+                        pointColor = ChartUtils.COLORS[1 % ChartUtils.COLORS.size]
+                    }
+                }
+                
                 lines.add(line)
-            }
-            data = LineChartData(lines)
-            if (hasAxes) {
-                val axisX = Axis().setHasLines(true)
-                axisX.lineColor=R.color.black
-                val axisY: Axis = Axis().setHasLines(true)
-                axisX.lineColor=R.color.black
+                data = LineChartData(lines)
+                
+                if (hasAxes) {
+                    val axisX = Axis().apply {
+                        hasLines = true
+                        lineColor = R.color.black
+                    }
+                    val axisY = Axis().apply {
+                        hasLines = true
+                        lineColor = R.color.black
+                    }
 
-                if (hasAxesNames) {
-                    axisX.setName("Axis X")
-                    axisY.setName("Axis Y")
-                    axisX.textColor = R.color.black
-                    axisY.textColor = R.color.black
-                    axisX.isAutoGenerated = false
-                    axisX.setValues(axis_X_List)
-                    axisY.isAutoGenerated = false
-                    axisY.setValues(axis_Y_List)
-
+                    if (hasAxesNames) {
+                        axisX.name = "Axis X"
+                        axisY.name = "Axis Y"
+                        axisX.textColor = R.color.black
+                        axisY.textColor = R.color.black
+                        axisX.isAutoGenerated = false
+                        axisX.values = axis_X_List ?: mutableListOf()
+                        axisY.isAutoGenerated = false
+                        axisY.values = axis_Y_List ?: mutableListOf()
+                    }
+                    
+                    data?.axisXBottom = axisX
+                    data?.axisYLeft = axisY
+                } else {
+                    data?.axisXBottom = null
+                    data?.axisYLeft = null
                 }
-                data!!.axisXBottom = axisX
-                data!!.axisYLeft = axisY
-            } else {
-                data!!.axisXBottom = null
-                data!!.axisYLeft = null
+                
+                data?.baseValue = Float.NEGATIVE_INFINITY
+                chart?.lineChartData = data
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error generating chart data", e)
             }
-            data!!.baseValue = Float.NEGATIVE_INFINITY
-            chart!!.lineChartData = data
         }
 
-
         private fun toggleLabels() {
-            hasLabels = !hasLabels
-            if (hasLabels) {
-                hasLabelForSelected = false
-                chart!!.isValueSelectionEnabled = hasLabelForSelected
+            try {
+                hasLabels = !hasLabels
+                if (hasLabels) {
+                    hasLabelForSelected = false
+                    chart?.isValueSelectionEnabled = hasLabelForSelected
+                }
+                generateData()
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error toggling labels", e)
             }
-            generateData()
         }
 
         private fun toggleLabelForSelected() {
-            hasLabelForSelected = !hasLabelForSelected
-            chart!!.isValueSelectionEnabled = hasLabelForSelected
-            if (hasLabelForSelected) {
-                hasLabels = false
+            try {
+                hasLabelForSelected = !hasLabelForSelected
+                chart?.isValueSelectionEnabled = hasLabelForSelected
+                if (hasLabelForSelected) {
+                    hasLabels = false
+                }
+                generateData()
+            } catch (e: Exception) {
+                ErrorHandler.handleError(context, TAG, "Error toggling label for selected", e)
             }
-            generateData()
         }
-
 
         private inner class ValueTouchListener : LineChartOnValueSelectListener {
             override fun onValueSelected(lineIndex: Int, pointIndex: Int, value: PointValue) {
-                Toast.makeText(getActivity(), "Selected: $value", Toast.LENGTH_SHORT).show()
+                try {
+                    Toast.makeText(context, "Selected: $value", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    ErrorHandler.handleError(context, TAG, "Error showing selection toast", e)
+                }
             }
 
             override fun onValueDeselected() {
+                // Handle deselection if needed
             }
         }
     }
